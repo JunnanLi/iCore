@@ -26,7 +26,7 @@ in-line FPGA-CPU协同分组处理
 
 ### 连接关系
 模块间的连接关系如下图所示。
-![](/docs/img/模块连接关系.png)
+![](docs/img/模块连接关系.PNG)
 
 ## 软件部分
 There are 2 floders in "Software" folder:
