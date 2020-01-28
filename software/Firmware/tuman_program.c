@@ -6,11 +6,23 @@
 // means.
 
 #include "firmware.h"
+#define PKT_BASE_ADDR 0x8000000c
 
 /**program for testing lines of empty program */
 void tuman_program(void){
-	print_str("\n");
-	print_str("Hello AoTuman!\n");
+	print_str("Hello Tuman\n");
+	int *a;
+	int i;
+	while(1){
+		//	1st packet;
+		a = (int *)PKT_BASE_ADDR;
+		for(i=0; i<12; i++){
+			if(*a == 1){
+				*a = 3;
+			}
+			a = a + 512;
+		}
+	}
 }
 
 
