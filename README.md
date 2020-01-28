@@ -1,5 +1,8 @@
 # iCore项目
-in-line FPGA-CPU协同分组处理，包含硬件和软件两部分
+in-line FPGA-CPU协同分组处理
+
+## 目录
+  * [icore硬件部分](#硬件部分)
 
 ## 硬件部分
 ### 组成
