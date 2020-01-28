@@ -61,9 +61,9 @@ in-line FPGA-CPU协同分组处理
 我们使用firmware文件夹中README的命令生成firmware.hex二进制文件
 
 ### 生成FPGA可运行的比特流文件
-*首先，我们需要一个[OpenBox-S4平台相关代码](https://github.com/fast-codesign/FAST-OpenBox_S4-impl)，并使用该项目的中的`um.v`替换原来的`um.v`；
-*接着，加载其他的硬件模块文件，即`TuMan_core.v`, `TuMan_top.v`, `conf_mem.v`, `memory.v`, `um_for_cpu.v`, `um_for_pipeline.v`, `parser_pkt.v`, `manage_pkt.v`;
-*最后，我们使用Vivado 2018.2生成FPGA可运行的比特流文件，即OpenBox_S4.bit。
+1) 首先，我们需要一个[OpenBox-S4平台相关代码](https://github.com/fast-codesign/FAST-OpenBox_S4-impl)，并使用该项目的中的`um.v`替换原来的`um.v`；
+2) 接着，加载其他的硬件模块文件，即`TuMan_core.v`, `TuMan_top.v`, `conf_mem.v`, `memory.v`, `um_for_cpu.v`, `um_for_pipeline.v`, `parser_pkt.v`, `manage_pkt.v`;
+3) 最后，我们使用Vivado 2018.2生成FPGA可运行的比特流文件，即OpenBox_S4.bit。
 
 ### 与CPU交互
 我们使用controller文件夹README中的命令实现与CPU的交互。
