@@ -3,6 +3,8 @@ in-line FPGA-CPU协同分组处理
 
 ## 目录
   * [icore硬件部分](#硬件部分)
+     * [硬件模块组成](#组成)
+     * [硬件模块连接关系](#连接关系)
 
 ## 硬件部分
 ### 组成
@@ -23,6 +25,8 @@ in-line FPGA-CPU协同分组处理
 | testbench_for_L2SW.v  |  项目的测试激励，供仿真使用 |
 
 ### 连接关系
+模块间的连接关系如下图所示。
+![](/docs/img/模块连接关系.png)
 
 ## 软件部分
 There are 2 floders in "Software" folder:
