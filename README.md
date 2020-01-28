@@ -38,7 +38,7 @@ in-line FPGA-CPU协同分组处理，如下图所示。其中CPU采用10级流�
 ### 硬件模块连接关系
 模块间的连接关系如下图所示。
 
-<img src=https://github.com/JunnanLi/iCore/blob/master/docs/img/%E6%A8%A1%E5%9D%97%E8%BF%9E%E6%8E%A5%E5%85%B3%E7%B3%BB.PNG width="500">
+<img src=https://github.com/JunnanLi/iCore/blob/master/docs/img/%E6%A8%A1%E5%9D%97%E8%BF%9E%E6%8E%A5%E5%85%B3%E7%B3%BB.PNG width="600">
 
 ## icore软件部分
 软件部分包含两个文件夹，即firmware和controller。具体功能如下表所述，详细功能参见各自文件夹中的README：
