@@ -1,0 +1,76 @@
+Archive member included to satisfy reference by file (symbol)
+
+/opt/riscv32i/lib/gcc/riscv32-unknown-elf/9.2.0/libgcc.a(div.o)
+                              firmware/print.o (__udivsi3)
+
+Discarded input sections
+
+ .debug_line    0x0000000000000000      0x168 /opt/riscv32i/lib/gcc/riscv32-unknown-elf/9.2.0/libgcc.a(div.o)
+ .debug_info    0x0000000000000000       0x26 /opt/riscv32i/lib/gcc/riscv32-unknown-elf/9.2.0/libgcc.a(div.o)
+ .debug_abbrev  0x0000000000000000       0x14 /opt/riscv32i/lib/gcc/riscv32-unknown-elf/9.2.0/libgcc.a(div.o)
+ .debug_aranges
+                0x0000000000000000       0x20 /opt/riscv32i/lib/gcc/riscv32-unknown-elf/9.2.0/libgcc.a(div.o)
+ .debug_str     0x0000000000000000       0xa2 /opt/riscv32i/lib/gcc/riscv32-unknown-elf/9.2.0/libgcc.a(div.o)
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+mem              0x0000000000000000 0x000000000000c000
+*default*        0x0000000000000000 0xffffffffffffffff
+
+Linker script and memory map
+
+
+.memory         0x0000000000000000      0x2dc
+                0x0000000000000000                . = 0x0
+ start*(.text)
+ *(.text)
+ .text          0x0000000000000000       0xd4 firmware/start.o
+ .text          0x00000000000000d4       0x14 firmware/tuman_program.o
+                0x00000000000000d4                tuman_program
+ .text          0x00000000000000e8       0x8a firmware/print.o
+                0x00000000000000e8                print_chr
+                0x00000000000000f0                print_str
+                0x0000000000000102                print_dec
+                0x000000000000014e                print_hex
+ *fill*         0x0000000000000172        0x2 
+ .text          0x0000000000000174       0xb4 /opt/riscv32i/lib/gcc/riscv32-unknown-elf/9.2.0/libgcc.a(div.o)
+                0x0000000000000174                __divsi3
+                0x000000000000017c                __udivsi3
+                0x00000000000001c4                __umodsi3
+                0x00000000000001f8                __modsi3
+ *(*)
+ .data          0x0000000000000228        0x0 firmware/start.o
+ .bss           0x0000000000000228        0x0 firmware/start.o
+ .riscv.attributes
+                0x0000000000000228       0x1a firmware/start.o
+ .data          0x0000000000000242        0x0 firmware/tuman_program.o
+ .bss           0x0000000000000242        0x0 firmware/tuman_program.o
+ *fill*         0x0000000000000242        0x2 
+ .rodata.str1.4
+                0x0000000000000244       0x14 firmware/tuman_program.o
+ .comment       0x0000000000000258       0x11 firmware/tuman_program.o
+                                         0x12 (size before relaxing)
+ .riscv.attributes
+                0x0000000000000269       0x21 firmware/tuman_program.o
+ .data          0x000000000000028a        0x0 firmware/print.o
+ .bss           0x000000000000028a        0x0 firmware/print.o
+ *fill*         0x000000000000028a        0x2 
+ .rodata.str1.4
+                0x000000000000028c       0x14 firmware/print.o
+                                         0x11 (size before relaxing)
+ .comment       0x00000000000002a0       0x12 firmware/print.o
+ .riscv.attributes
+                0x00000000000002a0       0x21 firmware/print.o
+ .data          0x00000000000002c1        0x0 /opt/riscv32i/lib/gcc/riscv32-unknown-elf/9.2.0/libgcc.a(div.o)
+ .bss           0x00000000000002c1        0x0 /opt/riscv32i/lib/gcc/riscv32-unknown-elf/9.2.0/libgcc.a(div.o)
+ .riscv.attributes
+                0x00000000000002c1       0x1a /opt/riscv32i/lib/gcc/riscv32-unknown-elf/9.2.0/libgcc.a(div.o)
+                0x00000000000002db                end = .
+                0x00000000000002dc                . = ALIGN (0x4)
+ *fill*         0x00000000000002db        0x1 
+LOAD firmware/start.o
+LOAD firmware/tuman_program.o
+LOAD firmware/print.o
+LOAD /opt/riscv32i/lib/gcc/riscv32-unknown-elf/9.2.0/libgcc.a
+OUTPUT(firmware/firmware.elf elf32-littleriscv)
