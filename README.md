@@ -39,7 +39,7 @@ in-line FPGA-CPU协同分组处理
 <img src=https://github.com/JunnanLi/iCore/blob/master/docs/img/%E6%A8%A1%E5%9D%97%E8%BF%9E%E6%8E%A5%E5%85%B3%E7%B3%BB.PNG width="500">
 
 ## icore软件部分
-软件部分包含两个文件件，即firmware和controller。具体功能如下表所述，详细功能参见各自文件夹中的README：
+软件部分包含两个文件夹，即firmware和controller。具体功能如下表所述，详细功能参见各自文件夹中的README：
 
 | Folder name | Function description |
 |-------------|----------------------|
@@ -48,7 +48,7 @@ in-line FPGA-CPU协同分组处理
 
 ## Vivado仿真
 ### 流程
-1) 使用firmware文件架README中的命令生成firmware.hex二进制文件
+1) 使用firmware文件夹README中的命令生成firmware.hex二进制文件；
 2) 打开vivado，加载hardware文件架中.v/.sv文件，其中需要将firmware.hex的指令更新gen_data_fixed_instr.sv。
 
 ### 仿真结果
@@ -58,12 +58,12 @@ in-line FPGA-CPU协同分组处理
 我们目前仅支持在[OpenBox-S4](https://github.com/fast-codesign/FAST-OpenBox_S4-impl)上验证iCore项目。我们提供预先编译好的[二进制文件](https://github.com/JunnanLi/iCore/tree/master/mcs%26hex)，可以直接用于FPGA验证.  
 
 ### 生成CPU可运行的二进制文件
-我们使用firmware文件架中README的命令生成firmware.hex二进制文件
+我们使用firmware文件夹中README的命令生成firmware.hex二进制文件
 
 ### 生成FPGA可运行的比特流文件
-首先，我们需要一个[OpenBox-S4平台相关代码](https://github.com/fast-codesign/FAST-OpenBox_S4-impl)，并使用该项目的中的`um.v`替换原来的`um.v`；
-接着，加载其他的硬件模块文件，即`TuMan_core.v`, `TuMan_top.v`, `conf_mem.v`, `memory.v`, `um_for_cpu.v`, `um_for_pipeline.v`, `parser_pkt.v`, `manage_pkt.v`;
-最后，我们使用Vivado 2018.2生成FPGA可运行的比特流文件，即OpenBox_S4.bit。
+*首先，我们需要一个[OpenBox-S4平台相关代码](https://github.com/fast-codesign/FAST-OpenBox_S4-impl)，并使用该项目的中的`um.v`替换原来的`um.v`；
+*接着，加载其他的硬件模块文件，即`TuMan_core.v`, `TuMan_top.v`, `conf_mem.v`, `memory.v`, `um_for_cpu.v`, `um_for_pipeline.v`, `parser_pkt.v`, `manage_pkt.v`;
+*最后，我们使用Vivado 2018.2生成FPGA可运行的比特流文件，即OpenBox_S4.bit。
 
 ### 与CPU交互
 我们使用controller文件夹README中的命令实现与CPU的交互。
