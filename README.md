@@ -1,7 +1,6 @@
 # iCore项目
 in-line FPGA-CPU协同分组处理，如下图所示。
-<img src=https://github.com/JunnanLi/iCore/blob/master/docs/img/iCore%E6%95%B4%E4%BD%93%E6%9E%B6%E6%9E%84.PNG, width="1000">
-
+<img src=https://github.com/JunnanLi/iCore/blob/master/docs/img/iCore%E6%95%B4%E4%BD%93%E6%9E%B6%E6%9E%84.PNG width="500">
 ## 目录
   * [icore硬件部分](#icore硬件部分)
      * [硬件模块组成](#硬件模块组成)
