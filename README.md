@@ -2,12 +2,21 @@
 in-line FPGA-CPU协同分组处理
 
 ## 目录
-  * [icore硬件部分](#硬件部分)
-     * [硬件模块组成](#组成)
-     * [硬件模块连接关系](#连接关系)
+  * [icore硬件部分](#icore硬件部分)
+     * [硬件模块组成](#硬件模块组成)
+     * [硬件模块连接关系](#硬件模块连接关系)
+  * [icore软件部分](#icore软件部分)
+     * [流程](#流程)
+     * [仿真结果](#仿真结果)
+  * [Vivado仿真](#Vivado仿真)
+  * [FPGA验证](#FPGA验证)
+     * [生成CPU可运行的二进制文件](#生成CPU可运行的二进制文件)
+     * [生成FPGA可运行的比特流文件](#生成FPGA可运行的比特流文件)
+     * [与CPU交互](#与CPU交互)
+     * [验证结果](#验证结果)
 
-## 硬件部分
-### 组成
+## icore硬件部分
+### 硬件模块组成
 硬件文件夹包含11个文件，功能如下表所示
 
 | 文件名                 | 功能描述 |
@@ -24,48 +33,40 @@ in-line FPGA-CPU协同分组处理
 | gen_data_fixed_instr.v|  指令静态存储, 根据FAST报文格式生成以太网报文，用于配置存储器，即ITCM and DTCM。供仿真使用 |
 | testbench_for_L2SW.v  |  项目的测试激励，供仿真使用 |
 
-### 连接关系
+### 硬件模块连接关系
 模块间的连接关系如下图所示。
 
 <img src=https://github.com/JunnanLi/iCore/blob/master/docs/img/%E6%A8%A1%E5%9D%97%E8%BF%9E%E6%8E%A5%E5%85%B3%E7%B3%BB.PNG width="500">
 
-## 软件部分
-There are 2 floders in "Software" folder:
+## icore软件部分
+软件部分包含两个文件件，即firmware和controller。具体功能如下表所述，详细功能参见各自文件夹中的README：
 
 | Folder name | Function description |
 |-------------|----------------------|
-| firmware    | generate firmware.hex|
-| controller  | communicate with cpu |
+| firmware    | 负责编译C代码生成二进制文件firmware.hex|
+| controller  | 负责将二进制文件写入CPU的存储器中，同时实现打印CPU运行过称中的打印信息 |
 
-## Simulation
-### Steps
-1) Generating firmware.hex by using commonds in firmware folder
-2) Using vivado/Modesim to simulate these project by loading hardware files and firmware.hex
+## Vivado仿真
+### 流程
+1) 使用firmware文件架README中的命令生成firmware.hex二进制文件
+2) 打开vivado，加载hardware文件架中.v/.sv文件，其中需要将firmware.hex的指令更新gen_data_fixed_instr.sv。
 
-### Result
-Run this program, and you will get following result: "Hello, AoTuman!"
+### 仿真结果
+运行上述代码，观察um模块的pktout_data_wr和pktout_data信号，可以发现输出5个TCP报文（在12.86us处）。
 
-## FPGA Emulation
-We currently only provide support for the [OpenBox-S4](https://github.com/fast-codesign/FAST-OpenBox_S4-impl). We provide pre-build binary program and bitstream files for OpenBox-S4 [here](https://github.com/JunnanLi/TuMan/tree/master/mcs%26hex).  
-### Generating binary program
-We use commonds in firmware folder to Generate firmware.hex
+## FPGA验证
+我们目前仅支持在[OpenBox-S4](https://github.com/fast-codesign/FAST-OpenBox_S4-impl)上验证iCore项目。我们提供预先编译好的[二进制文件](https://github.com/JunnanLi/iCore/tree/master/mcs%26hex)，可以直接用于FPGA验证.  
 
-### Generating bitstream
-First, we need a typical [OpenBox-S4 project](https://github.com/fast-codesign/FAST-OpenBox_S4-impl), and replace the `um.v` with our `um.v`.
-Then, we add our ohter hardware verilog files, i.e., `TuMan_core.v`, `TuMan_top.v`, `conf_mem.v` and `memory.v`.
-Third, we use Vivado 2018.2. to generate bitstream, i.e., OpenBox_S4.bit.
+### 生成CPU可运行的二进制文件
+我们使用firmware文件架中README的命令生成firmware.hex二进制文件
 
-### Communicate with CPU
-We use commonds in controller folder to communicate with CPU
+### 生成FPGA可运行的比特流文件
+首先，我们需要一个[OpenBox-S4平台相关代码](https://github.com/fast-codesign/FAST-OpenBox_S4-impl)，并使用该项目的中的`um.v`替换原来的`um.v`；
+接着，加载其他的硬件模块文件，即`TuMan_core.v`, `TuMan_top.v`, `conf_mem.v`, `memory.v`, `um_for_cpu.v`, `um_for_pipeline.v`, `parser_pkt.v`, `manage_pkt.v`;
+最后，我们使用Vivado 2018.2生成FPGA可运行的比特流文件，即OpenBox_S4.bit。
 
-### Result
-We can recieve values returned from CPU by run t_recv:  
->>interface: enp0s31f6  
->>dtcm_sel is 0  
->>dtcm_sel is 1  
->>  
->>===============  
->>Hello, AoTuman!  
->>\===============  
->>  
->>DONE  
+### 与CPU交互
+我们使用controller文件夹README中的命令实现与CPU的交互。
+
+### 验证结果
+打开wiresharek，使用发包工具发送任意的TCP报文，可以抓到FPGA返回的相同TCP报文。
