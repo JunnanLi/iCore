@@ -26,7 +26,8 @@ in-line FPGA-CPU协同分组处理
 
 ### 连接关系
 模块间的连接关系如下图所示。
-![](docs/img/模块连接关系.PNG){:width=100px height=100px}
+
+<img src=https://github.com/JunnanLi/iCore/blob/master/docs/img/%E6%A8%A1%E5%9D%97%E8%BF%9E%E6%8E%A5%E5%85%B3%E7%B3%BB.PNG width="100">
 
 ## 软件部分
 There are 2 floders in "Software" folder:
