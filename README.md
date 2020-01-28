@@ -33,7 +33,7 @@ in-line FPGA-CPU协同分组处理，如下图所示。其中CPU采用10级流�
 | um_for_pktPipeline.v  |  项目为pipeline建立的顶层文件，包含解析和报文处理模块，即parser_pkt.v和manage_pkt.v |
 | um.v                  |  项目的顶层模块，接口定义参见[FAST开源项目](http://www.fastswitch.org/), 负责从网口接收报文，以及向网口发送报文 |
 | gen_data_fixed_instr.v|  指令静态存储, 根据FAST报文格式生成以太网报文，用于配置存储器，即ITCM and DTCM。供仿真使用 |
-| testbench_for_L2SW.v  |  项目的测试激励，供仿真使用 |
+| testbench_for_iCore.v |  项目的测试激励，供仿真使用 |
 
 ### 硬件模块连接关系
 模块间的连接关系如下图所示。
