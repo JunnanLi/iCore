@@ -52,7 +52,9 @@ in-line FPGA-CPU协同分组处理
 2) 打开vivado，加载hardware文件架中.v/.sv文件，其中需要将firmware.hex的指令更新gen_data_fixed_instr.sv。
 
 ### 仿真结果
-运行上述代码，观察um模块的pktout_data_wr和pktout_data信号，可以发现输出5个TCP报文（在12.86us处）。
+运行上述代码，观察um模块的pktout_data_wr和pktout_data信号，可以发现输出5个TCP报文（在12.86us处），如下图所示。
+
+<img src=https://github.com/JunnanLi/iCore/blob/master/docs/img/%E4%BB%BF%E7%9C%9F%E7%BB%93%E6%9E%9C%E7%A4%BA%E6%84%8F.png width="1000">
 
 ## FPGA验证
 我们目前仅支持在[OpenBox-S4](https://github.com/fast-codesign/FAST-OpenBox_S4-impl)上验证iCore项目。我们提供预先编译好的[二进制文件](https://github.com/JunnanLi/iCore/tree/master/mcs%26hex)，可以直接用于FPGA验证.  
