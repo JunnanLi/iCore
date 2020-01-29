@@ -51,14 +51,15 @@ iCore可用于in-line FPGA-CPU协同分组处理。iCore整体架构如下图所
 | firmware    | 负责编译C代码生成二进制文件firmware.hex|
 | controller  | 负责将二进制文件写入CPU的存储器中，同时实现打印CPU运行过称中的打印信息 |
 
-软件部分在终端主机上运行，与FPGA的交互通过以太网报文实现（实现机制参考[FAST项目](https://github.com/Winters123/paper-base/blob/master/FAST-final.pdf)）。
+软件部分在终端主机上运行，与FPGA的交互通过以太网报文实现（实现机制参考[FAST项目](https://github.com/Winters123/paper-base/blob/master/FAST-final.pdf)）。iCore软件部分与FPGA的交互过程如下图所示。
 <img src=https://github.com/JunnanLi/iCore/blob/master/docs/img/%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B.PNG width="700">
 
 
 ## Vivado仿真
 ### 流程
-1) 使用firmware文件夹README中的命令生成firmware.hex二进制文件；
-2) 打开vivado，加载hardware文件架中.v/.sv文件，其中需要将firmware.hex的指令更新gen_data_fixed_instr.sv。
+1) 根据firmware文件夹的(README)[https://github.com/JunnanLi/iCore/blob/master/software/Firmware/README.md]编译C程序，以生成firmware.hex二进制文件；
+2) 打开vivado，加载[hardware](https://github.com/JunnanLi/iCore/tree/master/hardware)文件夹中的所有.v/.sv文件，并将test_for_icore设置为顶层文件
+3) 读取firmware.hex的指令，并更新[gen_data_fixed_instr.sv](https://github.com/JunnanLi/iCore/blob/master/hardware/gen_data_fixed_instr.sv)中的memory寄存器（27行）。目前我们实现的方式是运行write_instr.py，需要保证firmware.hex，[gen_data_instr.sv](https://github.com/JunnanLi/iCore/blob/master/hardware/write_instr.py)在相同目录。
 
 ### 仿真结果
 运行上述代码，观察um模块的pktout_data_wr和pktout_data信号，可以发现输出5个TCP报文（在12.86us处），如下图所示。
