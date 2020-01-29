@@ -24,8 +24,8 @@ iCore可用于in-line FPGA-CPU协同分组处理。iCore整体架构如下图所
 ### 硬件模块组成
 硬件文件夹包含11个文件，功能如下表所示
 
-| 文件名                 | 包含的模块  | 功能描述 |
-|-----------------------|-------------|---------|
+| 文件名                 | 包含的模块    | 功能描述 |
+|:---------------------:|:-----------:|---------|
 | TuMan_core.v          |  TuMan_core | 10级流水RISCV核（[TuMan](https://github.com/JunnanLi/TuMan)） |
 | TuMan_top.v           |  TuMan_top  |CPU核顶层文件，连接CPU核和存储器 |
 | memory.v              |  mem_instr<br>mem_data  |指令存储器（即ITCM）<br>数据存储器（即DTCM） |
