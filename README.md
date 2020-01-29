@@ -51,6 +51,9 @@ iCore可用于in-line FPGA-CPU协同分组处理。iCore整体架构如下图所
 | firmware    | 负责编译C代码生成二进制文件firmware.hex|
 | controller  | 负责将二进制文件写入CPU的存储器中，同时实现打印CPU运行过称中的打印信息 |
 
+<img src=https://github.com/JunnanLi/iCore/blob/master/docs/img/%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B.PNG width="600">
+
+
 ## Vivado仿真
 ### 流程
 1) 使用firmware文件夹README中的命令生成firmware.hex二进制文件；
