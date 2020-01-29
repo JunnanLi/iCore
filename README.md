@@ -84,5 +84,5 @@ iCore可用于in-line FPGA-CPU协同分组处理。iCore整体架构如下图所
 
 ### 验证结果
 1) 首先，代开`Hardware Manager`，并将比特流文件烧入FPGA中；
-2）使用根据controller文件夹中[README](https://github.com/JunnanLi/iCore/blob/master/software/Controller/README.md)配置CPU指令、数据内容，并开启运行；
-2）打开wiresharek，使用发包工具发送任意的TCP报文，可以抓到FPGA返回的相同TCP报文。
+2) 使用根据controller文件夹中[README](https://github.com/JunnanLi/iCore/blob/master/software/Controller/README.md)配置CPU指令、数据内容，并开启运行；
+3) 打开wiresharek，使用发包工具发送任意的TCP报文，可以抓到FPGA返回的相同TCP报文。
