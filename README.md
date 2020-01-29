@@ -39,7 +39,7 @@ iCore可用于in-line FPGA-CPU协同分组处理。iCore整体架构如下图所
 | testbench_for_iCore.v |  test_for_icore|项目的测试激励，供仿真使用 |
 
 ### 硬件模块连接关系
-模块间的连接关系如下图所示。
+模块间的连接关系如下图所示。iCore可以分成上下两层，上层为um_for_cpu，实现CPU相关功能，包括配置指令和数据、指令与数据存储单元、CPU核运行单元；下层实现硬件流水线功能，包含报文解析、报文处理模块。另外，基于RAM实现的报文缓存单元放在流水线的报文处理模块当中（manage_pkt.v），其具有两个访问端口，一个供CPU使用，另一个分时供流水线输入、输出使用。为避免流水线输入、输出抢占RAM访问接口，iCore还设计了多个独立的RAM，通过分时复用RAM读写端口，可以获得线速访存性能。
 
 <img src=https://github.com/JunnanLi/iCore/blob/master/docs/img/%E6%A8%A1%E5%9D%97%E8%BF%9E%E6%8E%A5%E5%85%B3%E7%B3%BB.PNG width="600">
 
