@@ -15,7 +15,7 @@
  **/
 // `define FPGA_ALTERA
 
-module manage(
+module manager(
 	input 				clk,
 	input 				rst_n,
 	// FAST packets from CPU (ARM A8) or Physical ports, the format is according to fast 
