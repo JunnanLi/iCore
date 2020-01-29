@@ -52,6 +52,7 @@ iCore可用于in-line FPGA-CPU协同分组处理。iCore整体架构如下图所
 | controller  | 负责将二进制文件写入CPU的存储器中，同时实现打印CPU运行过称中的打印信息 |
 
 软件部分在终端主机上运行，与FPGA的交互通过以太网报文实现（实现机制参考[FAST项目](https://github.com/Winters123/paper-base/blob/master/FAST-final.pdf)）。iCore软件部分与FPGA的交互过程如下图所示。
+
 <img src=https://github.com/JunnanLi/iCore/blob/master/docs/img/%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B.PNG width="700">
 
 
