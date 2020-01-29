@@ -59,26 +59,30 @@ iCore可用于in-line FPGA-CPU协同分组处理。iCore整体架构如下图所
 ## Vivado仿真
 ### 流程
 1) 根据firmware文件夹的[README](https://github.com/JunnanLi/iCore/blob/master/software/Firmware/README.md)编译C程序，以生成firmware.hex二进制文件。当然我们也提供预先编译好的[firmware.hex]；(https://github.com/JunnanLi/iCore/blob/master/mcs%26hex/firmware.hex)，实现了端口环路的功能，即报文1扣进，1口出；
-2) 打开vivado，加载[hardware](https://github.com/JunnanLi/iCore/tree/master/hardware)文件夹中的所有.v/.sv文件，并将test_for_icore设置为顶层文件；
+2) 打开vivado，加载[hardware](https://github.com/JunnanLi/iCore/tree/master/hardware)文件夹中的所有.v/.sv文件(gen_data_instr.sv除外)，并将test_for_icore设置为顶层文件；
 3) 读取firmware.hex的指令，并更新[gen_data_fixed_instr.sv](https://github.com/JunnanLi/iCore/blob/master/hardware/gen_data_fixed_instr.sv)中的memory寄存器（27行）。目前我们实现的方式是运行[write_instr.py](https://github.com/JunnanLi/iCore/blob/master/hardware/write_instr.py)，需要保证firmware.hex，[gen_data_instr.sv](https://github.com/JunnanLi/iCore/blob/master/hardware/gen_data_instr.sv)在相同目录。当然我们也提供预先编译好的[gen_data_fixed_instr.sv](https://github.com/JunnanLi/iCore/blob/master/hardware/gen_data_fixed_instr.sv)；
+4） 运行程序
 
 ### 仿真结果
-运行上述代码，观察um模块的pktout_data_wr和pktout_data信号，可以发现输出5个TCP报文（在12.86us处），如下图所示。
+加载um模块的pktout_data_wr和pktout_data两组接口信号，我们可以发现，在运行12.86us之后会输出5个TCP报文。
 
 
 ## FPGA验证
-我们目前仅支持在[OpenBox-S4](https://github.com/fast-codesign/FAST-OpenBox_S4-impl)上验证iCore项目。我们提供预先编译好的[二进制文件](https://github.com/JunnanLi/iCore/tree/master/mcs%26hex)，可以直接用于FPGA验证.  
+我们目前仅支持在[OpenBox-S4](https://github.com/fast-codesign/FAST-OpenBox_S4-impl)上验证iCore项目。我们提供预先编译好的[二进制文件](https://github.com/JunnanLi/iCore/tree/master/mcs%26hex)，可以直接用于FPGA验证。
 
 ### 生成CPU可运行的二进制文件
-我们使用firmware文件夹中README的命令生成firmware.hex二进制文件
+我们使用firmware文件夹中的[README](https://github.com/JunnanLi/iCore/blob/master/software/Firmware/README.md)生成firmware.hex二进制文件。
 
 ### 生成FPGA可运行的比特流文件
-1) 首先，我们需要一个[OpenBox-S4平台相关代码](https://github.com/fast-codesign/FAST-OpenBox_S4-impl)，并使用该项目的中的`um.v`替换原来的`um.v`；
-2) 接着，加载其他的硬件模块文件，即`TuMan_core.v`, `TuMan_top.v`, `conf_mem.v`, `memory.v`, `um_for_cpu.v`, `um_for_pipeline.v`, `parser_pkt.v`, `manage_pkt.v`;
-3) 最后，我们使用Vivado 2018.2生成FPGA可运行的比特流文件，即OpenBox_S4.bit。
+1) 首先，我们需要一个OpenBox-S4平台相关代码，点击[这里](https://github.com/fast-codesign/FAST-OpenBox_S4-impl)获取，并使用该项目中的`um.v`替换原来的`um.v`；
+2) 接着，我们使用Vivado 2018.2打开Openbox工程，并加载其他的八个硬件模块文件，即`TuMan_core.v`, `TuMan_top.v`, `conf_mem.v`, `memory.v`, `um_for_cpu.v`, `um_for_pipeline.v`, `parser_pkt.v`, `manage_pkt.v`;
+3) 第三，我们为该项目生成五个IP核，分别是fifo_134_256（同步fifo），fifo_8_64（同步fifo），fifo_96_64（同步fifo），ram_32_512（双端口RAM），ram_32_16384（双端口RAM）；
+4）运行`Generate Bitstream`，生成FPGA可运行的比特流文件，即OpenBox_S4.bit；
 
 ### 与CPU交互
-我们使用controller文件夹README中的命令实现与CPU的交互。
+我们根据controller文件夹中[README](https://github.com/JunnanLi/iCore/blob/master/software/Controller/README.md)实现与CPU的交互。
 
 ### 验证结果
-打开wiresharek，使用发包工具发送任意的TCP报文，可以抓到FPGA返回的相同TCP报文。
+1) 首先，代开`Hardware Manager`，并将比特流文件烧入FPGA中；
+2）使用根据controller文件夹中[README](https://github.com/JunnanLi/iCore/blob/master/software/Controller/README.md)配置CPU指令、数据内容，并开启运行；
+2）打开wiresharek，使用发包工具发送任意的TCP报文，可以抓到FPGA返回的相同TCP报文。
