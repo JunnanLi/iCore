@@ -60,7 +60,7 @@ iCore可用于in-line FPGA-CPU协同分组处理。iCore整体架构如下图所
 ### 流程
 1) 根据firmware文件夹的[README](https://github.com/JunnanLi/iCore/blob/master/software/Firmware/README.md)编译C程序，以生成firmware.hex二进制文件。当然我们也提供预先编译好的[firmware.hex]；(https://github.com/JunnanLi/iCore/blob/master/mcs%26hex/firmware.hex)，实现了端口环路的功能，即报文1扣进，1口出；
 2) 打开vivado，加载[hardware](https://github.com/JunnanLi/iCore/tree/master/hardware)文件夹中的所有.v/.sv文件，并将test_for_icore设置为顶层文件；
-3) 读取firmware.hex的指令，并更新[gen_data_fixed_instr.sv](https://github.com/JunnanLi/iCore/blob/master/hardware/gen_data_fixed_instr.sv)中的memory寄存器（27行）。目前我们实现的方式是运行[write_instr.py](https://github.com/JunnanLi/iCore/blob/master/hardware/write_instr.py)，需要保证firmware.hex，[gen_data_instr.sv](https://github.com/JunnanLi/iCore/blob/master/hardware/gen_data_instr.py)在相同目录。当然我们也提供预先编译好的[gen_data_fixed_instr.sv](https://github.com/JunnanLi/iCore/blob/master/hardware/gen_data_fixed_instr.py)；
+3) 读取firmware.hex的指令，并更新[gen_data_fixed_instr.sv](https://github.com/JunnanLi/iCore/blob/master/hardware/gen_data_fixed_instr.sv)中的memory寄存器（27行）。目前我们实现的方式是运行[write_instr.py](https://github.com/JunnanLi/iCore/blob/master/hardware/write_instr.py)，需要保证firmware.hex，[gen_data_instr.sv](https://github.com/JunnanLi/iCore/blob/master/hardware/gen_data_instr.sv)在相同目录。当然我们也提供预先编译好的[gen_data_fixed_instr.sv](https://github.com/JunnanLi/iCore/blob/master/hardware/gen_data_fixed_instr.sv)；
 
 ### 仿真结果
 运行上述代码，观察um模块的pktout_data_wr和pktout_data信号，可以发现输出5个TCP报文（在12.86us处），如下图所示。
