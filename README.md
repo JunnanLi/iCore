@@ -44,10 +44,10 @@ iCore可用于in-line FPGA-CPU协同分组处理。iCore整体架构如下图所
 <img src=https://github.com/JunnanLi/iCore/blob/master/docs/img/%E6%A8%A1%E5%9D%97%E8%BF%9E%E6%8E%A5%E5%85%B3%E7%B3%BB.PNG width="600">
 
 ## icore软件部分
-软件部分包含两个文件夹，即firmware和controller。具体功能如下表所述，详细功能参见各自文件夹中的README：
+软件部分需要实现两部分功能，分别是编译C程序生成CPU可以运行的二进制文件，以及实现外部主机和CPU交互的功能。为此，iCore软件的两个功能在项目中对应两个文件夹，即firmware和controller。具体功能如下表所述：
 
-| Folder name | Function description |
-|-------------|----------------------|
+| 文件夹名     | 功能描述 |
+|:-----------:|----------------------|
 | firmware    | 负责编译C代码生成二进制文件firmware.hex|
 | controller  | 负责将二进制文件写入CPU的存储器中，同时实现打印CPU运行过称中的打印信息 |
 
