@@ -1,5 +1,5 @@
 # iCore项目
-iCore可用于in-line FPGA-CPU协同分组处理。iCore整体架构如下图所示，其中CPU采用10级流水的RISCV核，即[TuMan32](https://github.com/JunnanLi/TuMan)，通过访存适配接口，即Memory Access for CPU，可以直接访问pipeline中的RAM（缓存有报文），从而实现报文的读取与修改。另外，pipeline也可以通过相应的访存适配接口，即Memory Access for pipeline访问pipeline中的RAM。因此，iCore最大的特点是pipeline可以直接将报文写入RAM，并由CPU直接读写（零拷贝），而无需重新复制。
+iCore可用于in-line FPGA-CPU协同分组处理。iCore整体架构如下图所示，其中CPU采用10级流水的RISCV核，即[TuMan32](https://github.com/JunnanLi/TuMan)，通过访存适配接口，即Memory Access for CPU，可以直接访问基于RAM实现的报文缓存区，从而实现报文的读取与修改。另外，分组处理流水线（pipeline）同样可以通过访存适配接口，即Memory Access for pipeline访问相同的报文缓存区。因此，iCore可以避免上送CPU的报文从流水线拷贝到CPU，以及从CPU拷贝回流水线的多次报文复制。iCore的流水线与CPU交互过程无需报文拷贝（零拷贝），从而降低处理延时，并能通过修改RAM位宽来自定义CPU与FPGA交互的带宽。
 
 <img src=https://github.com/JunnanLi/iCore/blob/master/docs/img/iCore%E6%95%B4%E4%BD%93%E6%9E%B6%E6%9E%84.PNG width="600">
 
