@@ -1,15 +1,16 @@
 /*
- *  TuMan32 -- A Small but pipelined RISC-V (RV32I) Processor Core
- *  Copyright (C) 2019-2020 Junnan Li <lijunnan@nudt.edu.cn>
+ *  iCore_hardware -- Hardware for TuMan RISC-V (RV32I) Processor Core.
  *
- *  Permission to use, copy, modify, and/or distribute this code for any purpose with or
- *   without fee is hereby granted, provided that the above copyright notice and this 
- *   permission notice appear in all copies.
+ *  Copyright (C) 2019-2020 Junnan Li <lijunnan@nudt.edu.cn>.
+ *  Copyright and related rights are licensed under the MIT license.
  *
- *	Function description: This module is used to generate FAST packets to configure itcm 
- *	 and dtcm of CPU.
+ *	Data: 2020.01.01
+ *	Description: This module is used to generate FAST packets to configure 
+ *	 itcm and dtcm of CPU.
+ *	Note: You can gen "gen_data_fixed_instr.sv" by running "write_instr.py"
  */
 `timescale 1 ns / 1 ps
+
 
 module gen_data(
 	input 					clk,
@@ -24,7 +25,7 @@ module gen_data(
 	*		memory[64KB] used to store instruction; 
 	*/
 	
-	wire [1023:0][31:0] memory = {
+	wire [2047:0][31:0] memory = {
 		/**write_fix_instr*/
     };
 
@@ -34,10 +35,10 @@ module gen_data(
     wire 	[31:0]	memory_data;
     reg 	[31:0]	addr_conf;
 
-    reg 	[3:0]	count;
+    reg 	[3:0]	count,pkt_count;
 
-    always @* begin
-    	addr_q <= 13'h3ff - addr_conf[9:0];
+     always @* begin
+    	addr_q <= 13'h7ff - addr_conf[10:0];
     end
 	assign memory_data = memory[addr_q];
 
@@ -69,6 +70,7 @@ module gen_data(
 			data_in_valid	<= 1'b0;
 			data_in 		<= 134'b0;
 			count			<= 4'b0;
+			pkt_count		<= 4'b0;
 			addr_conf		<= 32'b0;
 		end
 		else begin
@@ -117,7 +119,7 @@ module gen_data(
 					addr_conf 	<= addr_conf + 32'd1;
 					//addr_q 		<= addr_q - 14'd1;
 					data_in[131:0] <= {4'b0, 48'd0, memory_data, addr_conf,16'b0};
-					if(addr_conf == 32'd1023) begin
+					if(addr_conf == 32'd2000) begin
 						state_mem <= READ_1_S;
 						data_in[133:132] <= {2'b10};
 					end
@@ -146,7 +148,8 @@ module gen_data(
 					endcase
 					if(count == 4'd5) begin
 						count		<= 4'd0;
-						state_mem 	<= WAIT_10_CLK_S;
+						// state_mem 	<= WAIT_10_CLK_S;
+						state_mem 	<= READY_S;
 					end
 				end
 				READ_1_S: begin
@@ -228,8 +231,8 @@ module gen_data(
 					count <= count + 4'd1;
 					case(count)
 						4'd0: data_in <= {2'b11, 4'b0, 128'd0};
-						4'd1: data_in <= {2'b11, 4'b0, 96'b0,16'h9010,16'b0};
-						4'd2: data_in <= {2'b11, 4'b0, 128'd0};
+						4'd1: data_in <= {2'b11, 4'b0, 48'hffff_ffff_ffff, 48'b0,16'h0800,16'b0};
+						4'd2: data_in <= {2'b11, 4'b0, 64'd6,64'd0};
 						4'd3: data_in <= {2'b11, 4'b0, 128'd1};
 						4'd4: data_in <= {2'b11, 4'b0, 128'd2};
 						4'd5: data_in <= {2'b10, 4'b0, 128'd3};
@@ -237,7 +240,13 @@ module gen_data(
 						end
 					endcase
 					if(count == 4'd5) begin
-						state_mem 	<= READY_S;
+						count			<= 4'd0;
+						if(pkt_count == 4'd4)
+							state_mem	<= READY_S;
+						else begin
+							state_mem 	<= WAIT_10_CLK_S;
+							pkt_count	<= 4'd1 + pkt_count;
+						end
 					end
 				end
 				READY_S: begin
