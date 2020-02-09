@@ -3,7 +3,7 @@ iCore可用于in-line FPGA-CPU协同分组处理。iCore整体架构如下图所
 
 <img src=https://github.com/JunnanLi/iCore/blob/master/docs/img/iCore%E6%95%B4%E4%BD%93%E6%9E%B6%E6%9E%84.PNG width="600">
 
-此外，我们还设计了单独的RAM，即图中的RAM5，方便CPU主动发送报文，可用于实现TCP协议栈等功能。
+此外，我们还设计了单独的RAM，即图中的RAM5，方便CPU主动发送报文，可用于实现TCP/IP协议栈等功能。
 
 ## 目录
   * [icore简介](#iCore项目)
