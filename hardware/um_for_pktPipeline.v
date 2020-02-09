@@ -1,14 +1,12 @@
 /*
- *  iCore -- A hardware packet processing pipeline integrated with a in-line RISC-V Core
- *  Copyright (C) 2019-2020 Junnan Li <lijunnan@nudt.edu.cn>
+ *  iCore_hardware -- Hardware for TuMan RISC-V (RV32I) Processor Core.
  *
- *  Permission to use, copy, modify, and/or distribute this code for any purpose with or
- *   without fee is hereby granted, provided that the above copyright notice and this 
- *   permission notice appear in all copies.
+ *  Copyright (C) 2019-2020 Junnan Li <lijunnan@nudt.edu.cn>.
+ *  Copyright and related rights are licensed under the MIT license.
  *
- *	Function description: This top module pipeline.
+ *	Data: 2020.01.01
+ *	Description: This top module pipeline.
  */
-
 
 module um_for_pktPipeline(
 	input				clk,
