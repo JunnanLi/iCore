@@ -1,19 +1,18 @@
-/*
- *  TuMan32 -- A Small but pipelined RISC-V (RV32I) Processor Core
- *  Copyright (C) 2019-2020 Junnan Li <lijunnan@nudt.edu.cn>
+ /*
+ *  iCore_hardware -- Hardware for TuMan RISC-V (RV32I) Processor Core.
  *
- *  Permission to use, copy, modify, and/or distribute this code for any purpose with or
- *   without fee is hereby granted, provided that the above copyright notice and this 
- *   permission notice appear in all copies.
+ *  Copyright (C) 2019-2020 Junnan Li <lijunnan@nudt.edu.cn>.
+ *  Copyright and related rights are licensed under the MIT license.
  *
- *	Function description: This module is used to configure itcm and dtcm of CPU, and 
- *	 output "print" in program running on cpu.
+ *	Data: 2020.01.01
+ *	Description: This module is used to configure itcm and dtcm of CPU, 
+ *	 and output "print" in program running on cpu.
  */
 
 `timescale 1 ns / 1 ps
 
-/**	Please toggle following comment (i.e., `define FPGA_ALTERA) if you use an Alater
- **	 (Intel) FPGA
+/**	Please toggle following comment (i.e., `define FPGA_ALTERA) if you 
+ **	 use an Alater (Intel) FPGA
  **/
 // `define FPGA_ALTERA
 
@@ -22,8 +21,9 @@ input				clk,
 input				resetn,
 
 input				data_in_valid,	// input data valid
-input		[133:0]	data_in,		// input data, the format is according to fast
-									//	 project (www.http://www.fastswitch.org/)
+input		[133:0]	data_in,		// input data, the format is 
+									//	according to fast project 
+									//	(www.http://www.fastswitch.org/)
 output	reg			data_out_valid,	// output data valid
 output	reg	[133:0]	data_out,		// output data
 
@@ -40,7 +40,7 @@ output	reg	[31:0]	conf_addr_dtcm,
 output	reg	[31:0]	conf_wdata_dtcm,
 input		[31:0]	conf_rdata_dtcm,
 
-input				print_valid,	// output "print" in program running on CPU
+input				print_valid,	// output "print" in software program
 input		[7:0]	print_value
 );
 
@@ -61,7 +61,8 @@ parameter	IDLE_S		= 4'd0,
 			SEND_HEAD_0	= 4'd3,
 			SEND_HEAD_1	= 4'd4,
 			SEND_HEAD_2	= 4'd5,
-			SEND_HEAD_3	= 4'd6;
+			SEND_HEAD_3	= 4'd6,
+			SEND_PKT_S	= 4'd7;
 
 /**	read_sel_tag is used to identify whether need to read "sel", i.e., 
 *		running mode of CPU
@@ -178,16 +179,24 @@ end
 
 
 /**	register and wire */
-reg [31:0]	addr_temp[1:0];	// used to maintain address for reading program;
-reg 		rden_temp[1:0];	// used to maintain action type;
+reg [31:0]	addr_temp[1:0];	// maintain address for reading program;
+reg 		rden_temp[1:0];	// maintain action type;
 reg 		rdreq_rdata;	// fifo interface of reading program
 wire 		empty_rdata;	
 wire[95:0]	q_rdata;		
 reg 		rdreq_value;	// fifo interface of outputing "print"
 wire 		empty_value;
 wire[7:0]	q_value;
+wire[8:0]	usedw_value;
+wire		pad;
+reg	[9:0]	clk_count_value;// read value fifo every 1000 clocks;
+reg	[8:0]	count_value;	// number of valid value in the packet;
+reg	[11:0]	pkt_length;		// packet length include metadata;
+reg	[3:0]	count_head;		// number of value in the one head;
 
-/**	state machine used for maintaining address and action type of reading program*/
+/**	state machine used for maintaining address and action type of reading 
+ ** program
+ **/
 always @(posedge clk or negedge resetn) begin
 	if (!resetn) begin
 		// reset
@@ -195,12 +204,16 @@ always @(posedge clk or negedge resetn) begin
 		addr_temp[1] <= 32'b0;
 		rden_temp[0] <= 1'b0;
 		rden_temp[1] <= 1'b0;
+
+		clk_count_value	<= 9'd0;
 	end
 	else begin
 		addr_temp[0] <= conf_addr_itcm;
 		addr_temp[1] <= addr_temp[0];
 		rden_temp[0] <= conf_rden_itcm;
 		rden_temp[1] <= rden_temp[0];
+
+		clk_count_value	<= 9'd1 + clk_count_value;
 	end
 end
 
@@ -245,14 +258,14 @@ end
 		.empty(empty_value),
 		.full(),
 		.q(q_value),
-		.usedw()
+		.usedw(usedw_value)
 	);
 	defparam
 		value_buffer.width = 8,
-		value_buffer.depth = 6,
-		value_buffer.words = 64;
+		value_buffer.depth = 9,
+		value_buffer.words = 512;
 `else
-	fifo_8_64 value_buffer(
+	fifo_8_512 value_buffer(
 		.clk(clk),
 		.srst(!resetn),
 		.din(print_value),
@@ -260,7 +273,8 @@ end
 		.rd_en(rdreq_value),
 		.dout(q_value),
 		.full(),
-		.empty(empty_value)
+		.empty(empty_value),
+		.data_count({pad,usedw_value})
 	);
 `endif
 
@@ -272,28 +286,37 @@ end
 always @(posedge clk or negedge resetn) begin
 	if (!resetn) begin
 		// reset
-		data_out_valid <= 1'b0;
-		data_out <= 134'b0;
+		data_out_valid	<= 1'b0;
+		data_out 		<= 134'b0;
 		read_sel_tag[1] <= 1'b0;
+		count_value		<= 9'b0;
+		count_head		<= 4'b0;
+		pkt_length		<= 12'b0;
 
-		rdreq_rdata <= 1'b0;
-		rdreq_value <= 1'b0;
+		rdreq_rdata		<= 1'b0;
+		rdreq_value		<= 1'b0;
 	end
 	else begin
 		case(state_out)
 			IDLE_S: begin
-				data_out_valid <= 1'b0;
-				if(read_sel_tag[1] != read_sel_tag[0] || empty_rdata == 1'b0 ||
-					empty_value == 1'b0) begin
-					state_out <= SEND_META_0;
+				count_value		<= 9'b0;
+				data_out_valid	<= 1'b0;
+				if(read_sel_tag[1] != read_sel_tag[0] || empty_rdata == 1'b0) begin
+					pkt_length	<= 12'd96;
+					state_out	<= SEND_META_0;
+				end
+				else if(empty_value == 1'b0 && clk_count_value == 0) begin
+					pkt_length	<= 12'd96 + {3'b0,(usedw_value[8:4]+5'd1),4'b0};
+					count_value	<= usedw_value;
+					state_out	<= SEND_META_0;
 				end
 				else begin
-					state_out <= IDLE_S;
+					state_out	<= IDLE_S;
 				end
 			end
 			SEND_META_0: begin
 				data_out_valid <= 1'b1;
-				data_out <= {2'b01,4'b0,1'b0,1'b0,6'b0,2'b0,6'd0,3'b0,1'b0,12'd96,96'b0};
+				data_out <= {2'b01,4'b0,1'b0,1'b0,6'b0,2'b0,6'd0,3'b0,1'b0,pkt_length,96'b0};
 				state_out <= SEND_META_1;
 			end
 			SEND_META_1: begin
@@ -301,41 +324,89 @@ always @(posedge clk or negedge resetn) begin
 				state_out <= SEND_HEAD_0;
 			end
 			SEND_HEAD_0: begin
-				if(read_sel_tag[1] != read_sel_tag[0])
-					data_out[31:0] <= {16'h9002,16'b0};
+				if(read_sel_tag[1] != read_sel_tag[0]) begin
+					data_out[31:0]	<= {16'h9002,16'd1};
+				end
 				else if(empty_rdata == 1'b0) begin
-					data_out[31:0] <= {16'h9004,16'b0};
-					rdreq_rdata <= 1'b1;
+					data_out[31:0]	<= {16'h9004,16'b0};
+					rdreq_rdata		<= 1'b1;
 				end
 				else begin
-					data_out[31:0] <= {16'h9005,16'b0};
-					rdreq_value <= 1'b1;
+					data_out[31:0] <= {16'h9005,7'b0,count_value};
+					rdreq_value		<= 1'b0;
 				end
-				data_out[133:32] <= {2'b11,4'b0,48'd1,48'd2};
-				state_out <= SEND_HEAD_1;
+				state_out			<= SEND_HEAD_1;
+				data_out[133:32]	<= {2'b11,4'b0,48'd1,48'd2};				
 			end
 			SEND_HEAD_1: begin
-				rdreq_rdata <= 1'b0;
-				rdreq_value <= 1'b0;
+				rdreq_rdata			<= 1'b0;
+				rdreq_value			<= 1'b0;
 				if(read_sel_tag[1] != read_sel_tag[0]) begin
-					data_out[111:16] <= {95'b0,conf_sel_dtcm};
-					read_sel_tag[1]<= read_sel_tag[0];
+					data_out[111:16]<= {95'b0,conf_sel_dtcm};
+					read_sel_tag[1]	<= read_sel_tag[0];
 				end
 				else if(rdreq_rdata == 1'b1)
-					data_out[111:16] <= q_rdata;
+					data_out[111:16]<= q_rdata;
 				else
-					data_out[111:16] <= {88'b0,q_value};
-				data_out[133:112] <= {2'b11,4'b0,16'b0};
-				data_out[15:0] <= 16'b0;
-				state_out <= SEND_HEAD_2;
+					data_out[111:16]<= 96'b0;
+				data_out[133:112]	<= {2'b11,4'b0,16'b0};
+				data_out[15:0]		<= 16'b0;
+				state_out			<= SEND_HEAD_2;
 			end
 			SEND_HEAD_2: begin
-				data_out <= {2'b11,4'b0,128'd1};
-				state_out <= SEND_HEAD_3;
+				data_out			<= {2'b11,4'b0,128'd1};
+				state_out			<= SEND_HEAD_3;
 			end
 			SEND_HEAD_3: begin
-				data_out <= {2'b10,4'b0,128'd2};
-				state_out <= IDLE_S;
+				if(count_value == 9'd0) begin
+					state_out		<= IDLE_S;
+					data_out		<= {2'b10,4'b0,128'd2};
+				end
+				else begin
+					state_out		<= SEND_PKT_S;
+					data_out		<= {2'b11,4'b0,128'd2};
+					rdreq_value		<= 1'b1;
+					count_value		<= count_value - 9'd1;
+					count_head		<= 4'b0;
+				end
+			end
+			SEND_PKT_S: begin
+				count_value			<= count_value - 9'd1;
+				count_head			<= count_head + 4'd1;
+				data_out[127:0]		<= data_out[127:0];
+				(* full_case *)
+				case(count_head)
+					4'd0:	data_out[127:120]	<= q_value;
+					4'd1:	data_out[119:112]	<= q_value;
+					4'd2:	data_out[111:104]	<= q_value;
+					4'd3:	data_out[103:96]	<= q_value;
+					4'd4:	data_out[95:88]		<= q_value;
+					4'd5:	data_out[87:80]		<= q_value;
+					4'd6:	data_out[79:72]		<= q_value;
+					4'd7:	data_out[71:64]		<= q_value;
+					4'd8:	data_out[63:56]		<= q_value;
+					4'd9:	data_out[55:48]		<= q_value;
+					4'd10:	data_out[47:40]		<= q_value;
+					4'd11:	data_out[39:32]		<= q_value;
+					4'd12:	data_out[31:24]		<= q_value;
+					4'd13:	data_out[23:16]		<= q_value;
+					4'd14:	data_out[15:8]		<= q_value;
+					4'd15:	data_out[7:0]		<= q_value;
+				endcase
+				if(count_value == 9'd0) begin
+					rdreq_value			<= 1'b0;
+					data_out[133:128]	<= {2'b10,4'b0};
+					state_out			<= IDLE_S;
+				end
+				else begin
+					rdreq_value			<= 1'b1;
+					data_out[133:128]	<= {2'b11,4'b0};
+					state_out			<= SEND_PKT_S;
+				end
+				if(count_head == 4'd15 || count_value == 9'd0)
+					data_out_valid		<= 1'b1;
+				else
+					data_out_valid		<= 1'b0;
 			end
 			default: begin
 				state_out <= IDLE_S;
