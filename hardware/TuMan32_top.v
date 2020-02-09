@@ -10,49 +10,49 @@
  `timescale 1 ns / 1 ps
 
 module TuMan32_top(
-	input					clk,
-	input					resetn,
+	input				clk,
+	input				resetn,
 	// interface for configuring itcm
-	input					conf_rden_itcm,
-	input					conf_wren_itcm,
+	input				conf_rden_itcm,
+	input				conf_wren_itcm,
 	input			[31:0]	conf_addr_itcm,
 	input			[31:0]	conf_wdata_itcm,
-	output	wire	[31:0]	conf_rdata_itcm,
+	output	wire		[31:0]	conf_rdata_itcm,
 	// interface for configuring dtcm
-	input					conf_sel_dtcm,
-	input					conf_rden_dtcm,
-	input					conf_wren_dtcm,
+	input				conf_sel_dtcm,
+	input				conf_rden_dtcm,
+	input				conf_wren_dtcm,
 	input			[31:0]	conf_addr_dtcm,
 	input			[31:0]	conf_wdata_dtcm,
-	output	wire	[31:0]	conf_rdata_dtcm,
+	output	wire		[31:0]	conf_rdata_dtcm,
 	// interface for outputing "print"
 	output	wire			print_valid,
-	output	wire	[7:0]	print_value,
+	output	wire		[7:0]	print_value,
 	// interface for accessing ram in pipeline
 	output	wire			mem_wren_toPipe,
 	output	wire			mem_rden_toPipe,
-	output	wire	[31:0]	mem_addr_toPipe,
-	output	wire	[31:0]	mem_wdata_toPipe,
+	output	wire		[31:0]	mem_addr_toPipe,
+	output	wire		[31:0]	mem_wdata_toPipe,
 	input			[31:0]	mem_rdata_fromPipe
 );
 
 /** sram interface for instruction and data*/
-	(* mark_debug = "true" *)wire			mem_rinst;					//	read request
-	(* mark_debug = "true" *)wire [31:0]	mem_rinst_addr;				//	read addr
-	(* mark_debug = "true" *)wire [31:0]	mem_rdata_instr;			//	instruction
+	(* mark_debug = "true" *)wire		mem_rinst;		//	read request
+	(* mark_debug = "true" *)wire [31:0]	mem_rinst_addr;		//	read addr
+	(* mark_debug = "true" *)wire [31:0]	mem_rdata_instr;	//	instruction
 	wire 		mem_wren, mem_wren_dtcm;	//	write data request
 	wire 		mem_rden, mem_rden_dtcm;	//	read data request
 	wire [31:0]	mem_addr, mem_addr_dtcm;	//	write/read addr
 	wire [31:0]	mem_wdata, mem_wdata_dtcm;	//	write data
-	wire [3:0]	mem_wstrb;					//	write wstrb
+	wire [3:0]	mem_wstrb;			//	write wstrb
 	wire [31:0]	mem_rdata, mem_rdata_dtcm;	//	data
-	reg			mem_addr_tag[1:0];			//	tag;
-	reg			clk_counter_tag[1:0];
-	reg  [31:0]	clk_counter;				//	timer;
-	reg			finish_tag;					//	write 0xF0000000 with 1;
+	reg		mem_addr_tag[1:0];		//	tag;
+	reg		clk_counter_tag[1:0];
+	reg  [31:0]	clk_counter;			//	timer;
+	reg		finish_tag;			//	write 0xF0000000 with 1;
 
 /** mux of writing by conf or dtcm*/
-	// wire 		conf_wren_itcm_mux, conf_wren_d2i;
+	// wire 	conf_wren_itcm_mux, conf_wren_d2i;
 	// wire [31:0]	conf_addr_itcm_mux, conf_addr_d2i;
 	// wire [31:0]	conf_wdata_itcm_mux, conf_wdata_d2i;
 
@@ -156,9 +156,9 @@ mem_data DTCM(
 		end
 		else begin
 			if(mem_addr[31:28] == 4'hf && mem_wren == 1'b1)
-				finish_tag		<= 1'b0;
+				finish_tag	<= 1'b0;
 			else
-				finish_tag		<= finish_tag|conf_sel_dtcm;
+				finish_tag	<= finish_tag|conf_sel_dtcm;
 		end
 	end
 
@@ -166,22 +166,22 @@ mem_data DTCM(
 	(* mark_debug = "true" *)reg [26:0]	clk_count[1:0];
 	always @(posedge clk or negedge resetn) begin
 		if(!resetn) begin
-			clk_count[0]			<= 27'b0;
-			clk_count[1]			<= 27'b0;
-			clk_counter				<= 32'b0;
+			clk_count[0]		<= 27'b0;
+			clk_count[1]		<= 27'b0;
+			clk_counter		<= 32'b0;
 		end
 		else begin
 			if(mem_addr[29] == 1'b0)
-				clk_counter			<= {5'b0,clk_count[0]};
+				clk_counter	<= {5'b0,clk_count[0]};
 			else
-				clk_counter			<= {2'b0,clk_count[1],3'b0};
+				clk_counter	<= {2'b0,clk_count[1],3'b0};
 
 			if(conf_sel_dtcm) begin
-				clk_count[0]		<= 27'b0;
-				clk_count[1]		<= 27'b0;
+				clk_count[0]	<= 27'b0;
+				clk_count[1]	<= 27'b0;
 			end	
 			else begin
-				clk_count[1]		<= clk_count[1] + 27'd1;
+				clk_count[1]	<= clk_count[1] + 27'd1;
 				if(clk_count[1] == 125000000) begin
 					clk_count[1]	<= 27'b0;
 					clk_count[0]	<= 27'b1 + clk_count[0];
@@ -191,7 +191,7 @@ mem_data DTCM(
 //		if(mem_addr_toPipe == 32'h200000012 && mem_rden_toPipe)
 //			$display("read addr12 clk_count: %d", clk_count);
 //		else if(mem_addr_toPipe == 32'h200000011 && mem_rden_toPipe)
-//            $display("read addr11 clk_count: %d", clk_count);
+//           		$display("read addr11 clk_count: %d", clk_count);
 //		if(mem_addr_toPipe == 32'h20000003 && mem_wren_toPipe)
 //			$display("write clk_count: %d", clk_count);
 	end
