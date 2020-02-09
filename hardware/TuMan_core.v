@@ -1,11 +1,11 @@
 /*
- *  TuMan32 -- A Small but pipelined RISC-V (RV32I) Processor Core
- *  Copyright (C) 2019  Junnan Li <lijunnan@nudt.edu.cn>
+ *  iCore_hardware -- Hardware for TuMan RISC-V (RV32I) Processor Core.
  *
- *  Permission to use, copy, modify, and/or distribute this code for any purpose with or
- *   without fee is hereby granted, provided that the above copyright notice and this 
- *   permission notice appear in all copies. And, To AoTuman, my dear cat, thanks for 
- *	 your company.
+ *  Copyright (C) 2019-2020 Junnan Li <lijunnan@nudt.edu.cn>.
+ *  Copyright and related rights are licensed under the MIT license.
+ *
+ *	Data: 2020.01.01
+ *	Description: Core module of TuMan
  */
 
 `timescale 1 ns / 1 ps
@@ -41,8 +41,10 @@ module TuMan_core #(
 	input      [31:0] mem_rdata,
 
 	output reg        trace_valid,
-	output reg [35:0] trace_data
+	(* mark_debug = "true" *)output reg [35:0] trace_data
 );
+
+
 	parameter 	width_itcm 	= 32,
 				IF 			= 0,
 				ID 			= 1,
@@ -73,7 +75,7 @@ integer i;
 	localparam integer regindex_bits = 5;
 
 	/** cpu related registers */
-	reg [31:0]	cpuregs [0:regfile_size-1];
+	(* dont_touch = "true" *)reg [31:0]	cpuregs [0:regfile_size-1];
 	reg [3:0]	cpuregs_lock [0:regfile_size-1];
 	/** TO TO */
 	reg [63:0]	count_instr;	
@@ -84,7 +86,7 @@ integer i;
 	/** reg_op1, reg_op2, reg_sh are only valid after RR stage, i.e. at EX/RWM;
 	*	reg_op1_2b is the last two bits of reg_op1;
 	*/
-	reg [31:0]  reg_op1, reg_op2;
+	(* mark_debug = "true" *)reg [31:0]  reg_op1, reg_op2;
 	reg [1:0] 	reg_op1_2b[12:0];
 	reg [4:0] 	reg_sh;
 	reg [31:0]	reg_op2_ex, reg_op1_ex;
@@ -98,17 +100,17 @@ integer i;
 	*	branch_hit_ex is for jalr instruction;
 	*	load_realted_rr is for load-related (WAW ro RAW) instruction;
 	*/
-	reg 		cpuregs_write[11:0], cpuregs_write_ex, cpuregs_write_rr;
-	reg [31:0] 	cpuregs_rs1;
-	reg [31:0] 	cpuregs_rs2;
+	(* dont_touch = "true" *)reg 		cpuregs_write[11:0], cpuregs_write_ex, cpuregs_write_rr;
+	(* dont_touch = "true" *)reg [31:0] 	cpuregs_rs1;
+	(* dont_touch = "true" *)reg [31:0] 	cpuregs_rs2;
 	reg [regindex_bits-1:0]	decoded_rs;
 	reg [31:0]	branch_pc_rr, branch_pc_ex, refetch_pc_rr, current_pc[10:0];
-	(* keep = "true" *) reg [31:0]	reg_out[11:0];
-	reg [31:0]	reg_out_r[11:0];
+	(* dont_touch = "true" *)reg [31:0]	reg_out[11:0];
+	(* dont_touch = "true" *)reg [31:0]	reg_out_r[11:0];
 	reg 		pre_instr_finished_lr, instr_finished[11:0];
 	reg 		branch_hit_rr, branch_hit_ex, load_realted_rr;
 	reg 		instr_finish[4:0];
-	reg [7:0]	next_stage[11:0];
+	(* mark_debug = "true" *)reg [7:0]	next_stage[11:0];
 	
 
 	// adapting to 8/16/32b read or write;
@@ -169,7 +171,7 @@ integer i;
 
 	reg instr_lui[4:0], instr_auipc[4:0], instr_jal[4:0], instr_jalr[4:0];
 	reg instr_beq[4:0], instr_bne[4:0], instr_blt[4:0], instr_bge[4:0], instr_bltu[4:0], instr_bgeu[4:0];
-	reg instr_lb[4:0], instr_lh[4:0], instr_lw[4:0], instr_lbu[4:0], instr_lhu[4:0], instr_sb[4:0], instr_sh[4:0], instr_sw[4:0];
+	(* mark_debug = "true" *)reg instr_lb[4:0], instr_lh[4:0], instr_lw[4:0], instr_lbu[4:0], instr_lhu[4:0], instr_sb[4:0], instr_sh[4:0], instr_sw[4:0];
 	reg instr_addi[4:0], instr_slti[4:0], instr_sltiu[4:0], instr_xori[4:0], instr_ori[4:0], instr_andi[4:0], instr_slli[4:0], instr_srli[4:0], instr_srai[4:0];
 	reg instr_add[4:0], instr_sub[4:0], instr_sll[4:0], instr_slt[4:0], instr_sltu[4:0], instr_xor[4:0], instr_srl[4:0], instr_sra[4:0], instr_or[4:0], instr_and[4:0];
 	reg instr_rdcycle[4:0], instr_rdcycleh[4:0], instr_rdinstr[4:0], instr_rdinstrh[4:0], instr_ecall_ebreak[4:0];
@@ -180,7 +182,7 @@ integer i;
 	*	decoded_imm_j, imm of j type, extracted from instruction;
 	*/
 	reg [regindex_bits-1:0] decoded_rd[11:0], decoded_rs1[4:0], decoded_rs2[4:0];
-	reg [31:0] decoded_imm[11:0], decoded_imm_j;
+	(* dont_touch = "true" *)reg [31:0] decoded_imm[11:0], decoded_imm_j;
 	reg decoder_trigger;
 	reg decoder_trigger_q;
 	reg decoder_pseudo_trigger;
@@ -189,14 +191,14 @@ integer i;
 	reg is_lui_auipc_jal[4:0];
 	reg is_lb_lh_lw_lbu_lhu[11:0];
 	reg is_slli_srli_srai[4:0];
-	reg is_jalr_addi_slti_sltiu_xori_ori_andi[4:0];
+	(* mark_debug = "true" *)reg is_jalr_addi_slti_sltiu_xori_ori_andi[4:0];
 	reg is_sb_sh_sw[4:0];
 	reg is_sll_srl_sra[4:0];
 	reg is_lui_auipc_jal_jalr_addi_add_sub[4:0];
 	reg is_slti_blt_slt[4:0];
 	reg is_sltiu_bltu_sltu[4:0];
 	reg is_beq_bne_blt_bge_bltu_bgeu[4:0];
-	reg is_lbu_lhu_lw[4:0];
+	(* mark_debug = "true" *)reg is_lbu_lhu_lw[4:0];
 	reg is_alu_reg_imm[4:0];
 	reg is_alu_reg_reg[4:0];
 	reg is_compare[4:0];
@@ -350,11 +352,12 @@ integer i;
 		instr_jalr[RR]	<= instr_jalr[ID];
 		decoded_rs1[ID] <= decoded_rs1[IF];
 		decoded_rs2[ID] <= decoded_rs2[IF];
-		is_lb_lh_lw_lbu_lhu[ID] <= is_lb_lh_lw_lbu_lhu[IF];
-		is_lb_lh_lw_lbu_lhu[RR] <= is_lb_lh_lw_lbu_lhu[ID];
-		is_lb_lh_lw_lbu_lhu[EX] <= is_lb_lh_lw_lbu_lhu[RR];
-		is_lb_lh_lw_lbu_lhu[BUB_4] <= is_lb_lh_lw_lbu_lhu[EX];
-		is_lb_lh_lw_lbu_lhu[BUB_5] <= is_lb_lh_lw_lbu_lhu[BUB_4];
+		/**	clear load tag if meeting branch/jal/jarl instruction*/
+		is_lb_lh_lw_lbu_lhu[ID] <= is_lb_lh_lw_lbu_lhu[IF] && clk_temp[2];
+		is_lb_lh_lw_lbu_lhu[RR] <= is_lb_lh_lw_lbu_lhu[ID] && clk_temp[3];
+		is_lb_lh_lw_lbu_lhu[EX] <= is_lb_lh_lw_lbu_lhu[RR] && clk_temp[4];
+		is_lb_lh_lw_lbu_lhu[BUB_4] <= is_lb_lh_lw_lbu_lhu[EX] && clk_temp[5];
+		is_lb_lh_lw_lbu_lhu[BUB_5] <= is_lb_lh_lw_lbu_lhu[BUB_4] && clk_temp[6];
 		is_sb_sh_sw[ID] <= is_sb_sh_sw[IF];
 		is_sb_sh_sw[RR] <= is_sb_sh_sw[ID];
 		instr_beq[RR] 	<= instr_beq[ID];
@@ -432,12 +435,12 @@ integer i;
 	reg latched_is_lu[12:0];
 	reg latched_is_lh[12:0];
 	reg latched_is_lb[12:0];
-	reg [regindex_bits-1:0] latched_rd[11:0];
-	reg load_reg_lr;
+	(* dont_touch = "true" *)reg [regindex_bits-1:0] latched_rd[11:0];
+	(* dont_touch = "true" *)reg load_reg_lr;
 	reg branch_instr[11:0];
 
 	
-	reg [31:0] alu_out, alu_out_q;
+	(* mark_debug = "true" *)reg [31:0] alu_out, alu_out_q;
 	reg alu_out_0, alu_out_0_q;
 	reg alu_wait, alu_wait_2;
 
@@ -515,9 +518,9 @@ integer i;
 			/** initial registers */
 			if (REGS_INIT_ZERO) begin
 				for (i = 0; i < regfile_size; i = i+1)
-					cpuregs[i] = 'bx;
+					cpuregs[i] = 0;
 			end
-			cpuregs[0] <= 0;
+			// cpuregs[0] <= 0;
 			for (i = 0; i < regfile_size; i = i+1) begin
 				cpuregs_lock[i] <= 4'd0;
 			end
@@ -585,34 +588,98 @@ integer i;
 		end
 	end
 
+	// compare decoded_rs[IF] with latched_rd[BUB_5, BUB_4, EX, RR, ID], and get bitmap;
+	//	the ID is highest priority, i.e.,bitmap[4];
+	reg [4:0]	bitmap_rs1, bitmap_rs2;	
+	always @(posedge clk) begin
+		if(decoded_rs1[IF] == latched_rd[ID])			bitmap_rs1 <= 5'h10;
+		else if(decoded_rs1[IF] == latched_rd[RR])		bitmap_rs1 <= 5'h8;
+		else if(decoded_rs1[IF] == latched_rd[EX])		bitmap_rs1 <= 5'h4;
+		else if(decoded_rs1[IF] == latched_rd[BUB_4])	bitmap_rs1 <= 5'h2;
+		else if(decoded_rs1[IF] == latched_rd[BUB_5])	bitmap_rs1 <= 5'h1;
+		else											bitmap_rs1 <= 5'h0;
 
-	always @* begin
-		decoded_rs = 'bx;
-		if (ENABLE_REGS_DUALPORT) begin
-			if(decoded_rs1[ID]) begin
-				cpuregs_rs1 = cpuregs[decoded_rs1[ID]];
-				if(decoded_rs1[ID] == latched_rd[LR] 	&& load_reg_lr) 		 cpuregs_rs1 = reg_out[LR];
-				if(decoded_rs1[ID] == latched_rd[BUB_5] && cpuregs_write[BUB_5]) cpuregs_rs1 = reg_out_r[BUB_5];
-				if(decoded_rs1[ID] == latched_rd[BUB_4] && cpuregs_write[BUB_4]) cpuregs_rs1 = reg_out_r[BUB_4];
-				if(decoded_rs1[ID] == latched_rd[EX] 	&& cpuregs_write[EX])	 cpuregs_rs1 = reg_out_r[EX];
-				if(decoded_rs1[ID] == latched_rd[RR] 	&& cpuregs_write[RR])	 cpuregs_rs1 = reg_out_r[RR];
-			end
-			else begin
-				cpuregs_rs1 = 0;
-			end
-			if(decoded_rs2[ID]) begin
-				cpuregs_rs2 = cpuregs[decoded_rs2[ID]];
-				if(decoded_rs2[ID] == latched_rd[LR] 	&& load_reg_lr) 		 cpuregs_rs2 = reg_out[LR];
-				if(decoded_rs2[ID] == latched_rd[BUB_5] && cpuregs_write[BUB_5]) cpuregs_rs2 = reg_out_r[BUB_5];
-				if(decoded_rs2[ID] == latched_rd[BUB_4] && cpuregs_write[BUB_4]) cpuregs_rs2 = reg_out_r[BUB_4];
-				if(decoded_rs2[ID] == latched_rd[EX] 	&& cpuregs_write[EX])	 cpuregs_rs2 = reg_out_r[EX];
-				if(decoded_rs2[ID] == latched_rd[RR] 	&& cpuregs_write[RR])	 cpuregs_rs2 = reg_out_r[RR];
-			end
-			else begin
-				cpuregs_rs2 = 0;
-			end
-		end 
+		if(decoded_rs2[IF] == latched_rd[ID])			bitmap_rs2 <= 5'h10;
+		else if(decoded_rs2[IF] == latched_rd[RR])		bitmap_rs2 <= 5'h8;
+		else if(decoded_rs2[IF] == latched_rd[EX])		bitmap_rs2 <= 5'h4;
+		else if(decoded_rs2[IF] == latched_rd[BUB_4])	bitmap_rs2 <= 5'h2;
+		else if(decoded_rs2[IF] == latched_rd[BUB_5])	bitmap_rs2 <= 5'h1;
+		else											bitmap_rs2 <= 5'h0;
 	end
+
+	(* mark_debug = "true" *)reg 	usingLastValue_rs1_tag, usingLastValue_rs2_tag;
+	// data-harzard;
+	always @* begin
+		usingLastValue_rs1_tag = 1'b0;
+		if(decoded_rs1[ID]) begin
+			(* parallel_case *)
+			case(1)
+				// bitmap_rs1[4]&cpuregs_write[RR]: 	cpuregs_rs1 = reg_out_r[RR];
+				bitmap_rs1[4]&cpuregs_write[RR]: begin
+					usingLastValue_rs1_tag = 1'b1;
+					cpuregs_rs1 = 32'b0;
+				end
+				bitmap_rs1[3]&cpuregs_write[EX]: 	cpuregs_rs1 = reg_out_r[EX];
+				bitmap_rs1[2]&cpuregs_write[BUB_4]: cpuregs_rs1 = reg_out_r[BUB_4];
+				bitmap_rs1[1]&cpuregs_write[BUB_5]: cpuregs_rs1 = reg_out_r[BUB_5];
+				bitmap_rs1[0]&load_reg_lr: 			cpuregs_rs1 = reg_out[LR];
+				default: 							cpuregs_rs1 = cpuregs[decoded_rs1[ID]];
+			endcase
+		end
+		else begin
+			cpuregs_rs1 = 0;
+		end
+	end
+
+	always @* begin	
+		usingLastValue_rs2_tag = 1'b0;
+		if(decoded_rs2[ID]) begin
+			(* parallel_case *)
+			case(1)
+				// bitmap_rs2[4]&cpuregs_write[RR]: 	cpuregs_rs2 = reg_out_r[RR];
+				bitmap_rs2[4]&cpuregs_write[RR]: begin
+					usingLastValue_rs2_tag = 1'b1;
+					cpuregs_rs2 = 32'b0;
+				end 
+				bitmap_rs2[3]&cpuregs_write[EX]: 	cpuregs_rs2 = reg_out_r[EX];
+				bitmap_rs2[2]&cpuregs_write[BUB_4]: cpuregs_rs2 = reg_out_r[BUB_4];
+				bitmap_rs2[1]&cpuregs_write[BUB_5]: cpuregs_rs2 = reg_out_r[BUB_5];
+				bitmap_rs2[0]&load_reg_lr: 			cpuregs_rs2 = reg_out[LR];
+				default: 							cpuregs_rs2 = cpuregs[decoded_rs2[ID]];
+			endcase
+		end
+		else begin
+			cpuregs_rs2 = 0;
+		end
+	end
+
+	// always @* begin
+	// 	decoded_rs = 'bx;
+	// 	if (ENABLE_REGS_DUALPORT) begin
+	// 		if(decoded_rs1[ID]) begin
+	// 			cpuregs_rs1 = cpuregs[decoded_rs1[ID]];
+	// 			if(decoded_rs1[ID] == latched_rd[LR] 	&& load_reg_lr) 		 cpuregs_rs1 = reg_out[LR];
+	// 			if(decoded_rs1[ID] == latched_rd[BUB_5] && cpuregs_write[BUB_5]) cpuregs_rs1 = reg_out_r[BUB_5];
+	// 			if(decoded_rs1[ID] == latched_rd[BUB_4] && cpuregs_write[BUB_4]) cpuregs_rs1 = reg_out_r[BUB_4];
+	// 			if(decoded_rs1[ID] == latched_rd[EX] 	&& cpuregs_write[EX])	 cpuregs_rs1 = reg_out_r[EX];
+	// 			if(decoded_rs1[ID] == latched_rd[RR] 	&& cpuregs_write[RR])	 cpuregs_rs1 = reg_out_r[RR];
+	// 		end
+	// 		else begin
+	// 			cpuregs_rs1 = 0;
+	// 		end
+	// 		if(decoded_rs2[ID]) begin
+	// 			cpuregs_rs2 = cpuregs[decoded_rs2[ID]];
+	// 			if(decoded_rs2[ID] == latched_rd[LR] 	&& load_reg_lr) 		 cpuregs_rs2 = reg_out[LR];
+	// 			if(decoded_rs2[ID] == latched_rd[BUB_5] && cpuregs_write[BUB_5]) cpuregs_rs2 = reg_out_r[BUB_5];
+	// 			if(decoded_rs2[ID] == latched_rd[BUB_4] && cpuregs_write[BUB_4]) cpuregs_rs2 = reg_out_r[BUB_4];
+	// 			if(decoded_rs2[ID] == latched_rd[EX] 	&& cpuregs_write[EX])	 cpuregs_rs2 = reg_out_r[EX];
+	// 			if(decoded_rs2[ID] == latched_rd[RR] 	&& cpuregs_write[RR])	 cpuregs_rs2 = reg_out_r[RR];
+	// 		end
+	// 		else begin
+	// 			cpuregs_rs2 = 0;
+	// 		end
+	// 	end 
+	// end
 
 	reg load_realted_rs1_tag, load_realted_rs2_tag;
 
@@ -620,7 +687,8 @@ integer i;
 		//load_realted_tag = 1'b0;
 		if( (decoded_rs1[ID] == latched_rd[RR]  	&& is_lb_lh_lw_lbu_lhu[RR]) || 
 			(decoded_rs1[ID] == latched_rd[EX]  	&& is_lb_lh_lw_lbu_lhu[EX]) || 
-			(decoded_rs1[ID] == latched_rd[BUB_4]  	&& is_lb_lh_lw_lbu_lhu[BUB_4])) begin
+			(decoded_rs1[ID] == latched_rd[BUB_4]  	&& is_lb_lh_lw_lbu_lhu[BUB_4]) ||
+			(decoded_rs1[ID] == latched_rd[BUB_5]  	&& is_lb_lh_lw_lbu_lhu[BUB_5])) begin
 				load_realted_rs1_tag = 1'b1;
 		end
 		else begin
@@ -628,7 +696,8 @@ integer i;
 		end
 		if	((decoded_rs2[ID] == latched_rd[RR]  	&& is_lb_lh_lw_lbu_lhu[RR]) || 
 			(decoded_rs2[ID] == latched_rd[EX]  	&& is_lb_lh_lw_lbu_lhu[EX]) || 
-			(decoded_rs2[ID] == latched_rd[BUB_4]  	&& is_lb_lh_lw_lbu_lhu[BUB_4])) begin
+			(decoded_rs2[ID] == latched_rd[BUB_4]  	&& is_lb_lh_lw_lbu_lhu[BUB_4]) ||
+			(decoded_rs2[ID] == latched_rd[BUB_5]  	&& is_lb_lh_lw_lbu_lhu[BUB_5])) begin
 				load_realted_rs2_tag = 1'b1;
 		end
 		else begin
@@ -965,6 +1034,7 @@ integer i;
 			load_realted_rr <= 1'b0;
 		end
 		else begin
+			trace_data[3:0]	<= 4'd0;
 			//next_stage[RR] <= 0;
 			//cpuregs_write[RR] = 0;
 			load_realted_rr <= 1'b0;
@@ -990,6 +1060,7 @@ integer i;
 								reg_out[RR] <= count_instr[63:32];
 						endcase
 						next_stage[RR] <= LR_B;
+trace_data[3:0]	<= 4'd1;
 					end
 					is_lui_auipc_jal[ID]: begin
 						reg_op1 <= instr_lui[ID] ? 0 : current_pc[ID];
@@ -1001,22 +1072,27 @@ integer i;
 							branch_instr[RR] <= 1'b1;
 							reg_out[RR] <= current_pc[ID] + 32'd4;
 							next_stage[RR] <= 0;
+trace_data[3:0]	<= 4'd2;
 						end
 						else begin
 							branch_hit_rr <= 1'b0;
 							cpuregs_write_rr <= 1'b0;
 							branch_instr[RR] <= 1'b0;
 							next_stage[RR] <= EX_B;
+trace_data[3:0]	<= 4'd3;
 						end
 					end
-					is_lb_lh_lw_lbu_lhu[ID] && !instr_trap: begin
-						reg_op1 <= cpuregs_rs1;
+					is_lb_lh_lw_lbu_lhu[ID]: begin
+						// reg_op1 <= cpuregs_rs1;
+						reg_op1 <= (usingLastValue_rs1_tag)? reg_out_r[RR]: cpuregs_rs1;
 						reg_op2 <= decoded_imm[ID];
 						next_stage[RR] <= RM_B;
+trace_data[3:0]	<= 4'd4;
 						if(load_realted_rs1_tag) begin
 							refetch_pc_rr <= current_pc[ID];
 							load_realted_rr <= 1'b1;
 							next_stage[RR] <= 0;
+trace_data[3:0]	<= 4'd5;
 						end
 					end
 					// is_slli_srli_srai && !BARREL_SHIFTER: begin
@@ -1025,36 +1101,47 @@ integer i;
 					// 	cpu_state <= cpu_state_shift;
 					// end
 					is_jalr_addi_slti_sltiu_xori_ori_andi[ID], is_slli_srli_srai[ID] && BARREL_SHIFTER: begin
-						reg_op1 <= cpuregs_rs1;
+						// reg_op1 <= cpuregs_rs1;
+						reg_op1 <= (usingLastValue_rs1_tag)? reg_out_r[RR]: cpuregs_rs1;
 						reg_op2 <= is_slli_srli_srai[ID]? decoded_rs2[ID] :decoded_imm[ID];
 						next_stage[RR] <= EX_B;
+trace_data[3:0]	<= 4'd6;
 						if(load_realted_rs1_tag) begin
 							refetch_pc_rr <= current_pc[ID];
 							load_realted_rr <= 1'b1;
 							next_stage[RR] <= 0;
+trace_data[3:0]	<= 4'd7;
 						end
 					end
 					default: begin
-						reg_op1 <= cpuregs_rs1;
-						reg_sh <= cpuregs_rs2;
-						reg_op2 <= cpuregs_rs2;
+						// reg_op1 <= cpuregs_rs1;
+						reg_op1 <= (usingLastValue_rs1_tag)? reg_out_r[RR]: cpuregs_rs1;
+						// reg_sh <= cpuregs_rs2;
+						reg_sh <= (usingLastValue_rs2_tag)? reg_out_r[RR]: cpuregs_rs2;
+						// reg_op2 <= cpuregs_rs2;
+						reg_op2 <= (usingLastValue_rs2_tag)? reg_out_r[RR]: cpuregs_rs2;
 						(* parallel_case *)
 						case (1'b1)
 							is_sb_sh_sw[ID]: begin
-								reg_op1 <= cpuregs_rs1 + decoded_imm[ID];
+								// reg_op1 <= cpuregs_rs1 + decoded_imm[ID];
+								reg_op1 <= ((usingLastValue_rs1_tag)? reg_out_r[RR]: cpuregs_rs1) + decoded_imm[ID];
 								next_stage[RR] <= WM_B;
-								if(load_realted_rs1_tag) begin
-									refetch_pc_rr <= current_pc[ID];
-									load_realted_rr <= 1'b1;
-									next_stage[RR] <= 0;
-								end
-							end
-							default: begin
-								next_stage[RR] <= EX_B;
+trace_data[3:0]	<= 4'd8;
 								if(load_realted_rs1_tag || load_realted_rs2_tag) begin
 									refetch_pc_rr <= current_pc[ID];
 									load_realted_rr <= 1'b1;
 									next_stage[RR] <= 0;
+trace_data[3:0]	<= 4'd9;
+								end
+							end
+							default: begin
+								next_stage[RR] <= EX_B;
+trace_data[3:0]	<= 4'd10;
+								if(load_realted_rs1_tag || load_realted_rs2_tag) begin
+									refetch_pc_rr <= current_pc[ID];
+									load_realted_rr <= 1'b1;
+									next_stage[RR] <= 0;
+trace_data[3:0]	<= 4'd11;
 								end
 							end
 						endcase
