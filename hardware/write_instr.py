@@ -34,7 +34,7 @@ with open("gen_data_instr.sv","rb") as fv:
 			for line_hex in fhex:
 				count = count + 1
 				newline = "\t\t32\'h"+line_hex[0:-1]
-				if count == 1024:
+				if count == 2048:
 					newline = newline + '\n'
 					fv_gen.write(newline)
 					break
