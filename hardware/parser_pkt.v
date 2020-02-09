@@ -1,12 +1,11 @@
 /*
- *  iCore -- A hardware packet processing pipeline integrated with a in-line RISC-V Core
- *  Copyright (C) 2019-2020 Junnan Li <lijunnan@nudt.edu.cn>
+ *  iCore_hardware -- Hardware for TuMan RISC-V (RV32I) Processor Core.
  *
- *  Permission to use, copy, modify, and/or distribute this code for any purpose with or
- *   without fee is hereby granted, provided that the above copyright notice and this 
- *   permission notice appear in all copies.
+ *  Copyright (C) 2019-2020 Junnan Li <lijunnan@nudt.edu.cn>.
+ *  Copyright and related rights are licensed under the MIT license.
  *
- *	Function description: This module is used to parsing packet, and only pass TCP packet.
+ *	Data: 2020.01.01
+ *	Description: This module is used to parsing packet, and only pass TCP packet.
  */
 
 module parser(
@@ -44,14 +43,16 @@ module parser(
 				dataValid_temp[i]<= dataValid_temp[i-1];
 				data_temp[i]	<= data_temp[i-1];
 			end
-			// 	head_2:	data_in;
-			//	head_1: temp[0];
-			//	meta_1:	temp[1];
-			//	meta_0: temp[2];
+					
+			/**	whoes mac address is 48'hffff_ffff_ffff or 48'h8c:16:45:49:25:01 
+			 ** head_2:	data_in;
+			 **	head_1: temp[0];
+			 **	meta_1:	temp[1];
+			 **	meta_0: temp[2];
+			 **/
 			if(dataValid_temp[2] == 1'b1 && data_temp[2][133:132] == 2'b01 && 
-				(data_in[71:64] == 8'd6) && (data_temp[0][31:16] == 16'h0800)) begin
+				(data_temp[0][127:80] == 48'hffff_ffff_ffff || data_temp[0][127:80] == 48'h8c16_4549_2501)) begin
 					data_out		<= {data_temp[2][133:128],16'b0,data_temp[2][111:32],32'd1};	// cpu is not ready;
-					// data_out		<= {data_temp[2][133:128],16'b0,data_temp[2][111:32],32'd3};	// cpu is ready;
 					data_out_valid	<= 1'b1;
 			end
 			else if(dataValid_temp[2] == 1'b0) begin
@@ -60,7 +61,7 @@ module parser(
 			else begin
 				data_out		<= data_temp[2];
 				data_out_valid	<= data_out_valid;
-			end
+			end 
 		end
 	end
 
