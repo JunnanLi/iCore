@@ -4,8 +4,8 @@
  *  Copyright (C) 2019-2020 Junnan Li <lijunnan@nudt.edu.cn>.
  *  Copyright and related rights are licensed under the MIT license.
  *
- *	Data: 2020.01.01
- *	Description: Core module of TuMan
+ *  Data: 2020.01.01
+ *  Description: Core module of TuMan
  */
 
 `timescale 1 ns / 1 ps
@@ -33,8 +33,8 @@ module TuMan_core #(
 	output reg [31:0] mem_rinst_addr,
 	input	   [31:0] mem_rdata_instr,
 
-	output reg 		  mem_wren,
-	output reg 		  mem_rden,
+	output reg 	  mem_wren,
+	output reg 	  mem_rden,
 	output reg [31:0] mem_addr,
 	output reg [31:0] mem_wdata,
 	output reg [ 3:0] mem_wstrb,
@@ -46,26 +46,26 @@ module TuMan_core #(
 
 
 	parameter 	width_itcm 	= 32,
-				IF 			= 0,
-				ID 			= 1,
-				RR 			= 2,
-				EX 			= 3,
-				RWM 		= 4,
-				LR 			= 5,
-				BUB_1		= 6,
-				BUB_2		= 7,
-				BUB_3		= 8,
-				BUB_4		= 9,
-				BUB_5		= 10,
-				BUB_6		= 11,
-				IF_B		= 1,
-				ID_B 		= 2,
-				RR_B 		= 4,
-				EX_B 		= 8,
-				RWM_B 		= 48,
-				RM_B 		= 16,
-				WM_B		= 32,
-				LR_B 		= 64;
+				IF 	= 0,
+				ID 	= 1,
+				RR 	= 2,
+				EX 	= 3,
+				RWM 	= 4,
+				LR 	= 5,
+				BUB_1	= 6,
+				BUB_2	= 7,
+				BUB_3	= 8,
+				BUB_4	= 9,
+				BUB_5	= 10,
+				BUB_6	= 11,
+				IF_B	= 1,
+				ID_B 	= 2,
+				RR_B 	= 4,
+				EX_B 	= 8,
+				RWM_B 	= 48,
+				RM_B 	= 16,
+				WM_B	= 32,
+				LR_B 	= 64;
 
 `ifdef PRINT_TEST
 	parameter	NUM_PRINT = 10'd200;
