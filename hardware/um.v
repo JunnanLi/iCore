@@ -1,12 +1,11 @@
 /*
- *  iCore -- A hardware packet processing pipeline integrated with a in-line RISC-V Core
- *  Copyright (C) 2019-2020 Junnan Li <lijunnan@nudt.edu.cn>
+ *  iCore_hardware -- Hardware for TuMan RISC-V (RV32I) Processor Core.
  *
- *  Permission to use, copy, modify, and/or distribute this code for any purpose with or
- *   without fee is hereby granted, provided that the above copyright notice and this 
- *   permission notice appear in all copies.
+ *  Copyright (C) 2019-2020 Junnan Li <lijunnan@nudt.edu.cn>.
+ *  Copyright and related rights are licensed under the MIT license.
  *
- *	Function description: This top module of this project.
+ *	Data: 2020.01.01
+ *	Description: This top module of this project.
  */
 
  /**	Please toggle following comment (i.e., `define FPGA_ALTERA) if you use an Alater
@@ -110,12 +109,12 @@ module um #(
 	wire				empty_pkt[1:0];
 	wire		[133:0]	q_pkt[1:0];
 	//	ram's interface for CPU
-	wire				mem_wren;
-	wire				mem_rden;
-	wire		[31:0]	mem_addr;
-	wire		[31:0]	mem_wdata;
-	wire		[31:0]	mem_rdata;
-	wire				cpu_ready;
+	(* dont_touch = "true" *)wire				mem_wren;
+	(* dont_touch = "true" *)wire				mem_rden;
+	(* dont_touch = "true" *)wire		[31:0]	mem_addr;
+	(* dont_touch = "true" *)wire		[31:0]	mem_wdata;
+	(* dont_touch = "true" *)wire		[31:0]	mem_rdata;
+	(* dont_touch = "true" *)wire				cpu_ready;
 	//	mux function
 	reg		[3:0]	state_egress;
 	parameter		IDLE_S		= 4'd0,
@@ -153,10 +152,10 @@ module um #(
 	);
 	defparam
 		pkt_buffer_cpu.width = 134,
-		pkt_buffer_cpu.depth = 8,
-		pkt_buffer_cpu.words = 256;
+		pkt_buffer_cpu.depth = 9,
+		pkt_buffer_cpu.words = 512;
 `else
-	fifo_134_256 pkt_buffer_cpu(
+	fifo_134_512 pkt_buffer_cpu(
 		.clk(clk),
 		.srst(!rst_n),
 		.din(pktout_data_temp[0]),
@@ -199,10 +198,10 @@ module um #(
 	);
 	defparam
 		pkt_buffer_pipe.width = 134,
-		pkt_buffer_pipe.depth = 8,
+		pkt_buffer_pipe.depth = 9,
 		pkt_buffer_pipe.words = 256;
 `else
-	fifo_134_256 pkt_buffer_pipe(
+	fifo_134_512 pkt_buffer_pipe(
 		.clk(clk),
 		.srst(!rst_n),
 		.din(pktout_data_temp[1]),
