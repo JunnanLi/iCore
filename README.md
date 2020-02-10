@@ -22,6 +22,7 @@ iCore可用于in-line FPGA-CPU协同分组处理。iCore整体架构如下图所
   * [更多](#更多)
      * [资源开销](#资源开销)
      * [简化版TCP-IP协议栈测试](#简化版TCP-IP协议栈测试)
+     * [相关文档]# 相关文档
 
 ## icore硬件部分
 ### 硬件模块组成
@@ -115,6 +116,8 @@ iCore可用于in-line FPGA-CPU协同分组处理。iCore整体架构如下图所
 我们将iCore的IP地址设置为202.197.15.129，并作为TCP客户端，然后笔记本作为TCP服务端，实现TCP交互
 <img src=https://github.com/JunnanLi/iCore/blob/master/docs/img/tcp.png width="400">
 
+### 相关文档
+iCore简介文档请从[这里](https://github.com/JunnanLi/iCore/blob/master/docs/TuMan-A%20RV32I%20Core.pdf)获得
 
 
 
