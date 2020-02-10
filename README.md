@@ -98,6 +98,8 @@ iCore可用于in-line FPGA-CPU协同分组处理。iCore整体架构如下图所
 | parser_pkt         |         52 |             540 |                 0 |
 | manage_pkt         |        322 |             501 |                 7 |
 | conf_mem           |        283 |             500 |                 2 |
+| memory             |        162 |              49 |              30.5 |
+| TuMan_core         |       6294 |            3086 |                 0 |
 
 
 ### 简化版TCP-IP协议栈测试
