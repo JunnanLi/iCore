@@ -93,19 +93,25 @@ iCore可用于in-line FPGA-CPU协同分组处理。iCore整体架构如下图所
 ## 更多
 
 ### 资源开销
+| Module             | Slice LUTs | Slice Registers | Block Memory Tile |
+|:------------------ | ----------:| ---------------:| -----------------:|
+| parser_pkt         |         52 |             540 |                 0 |
+| manage_pkt         |        322 |             501 |                 7 |
+| conf_mem           |        283 |             500 |                 2 |
+
 
 ### 简化版TCP-IP协议栈测试
 1) ICMP测试
 我们将iCore的IP地址设置为202.197.15.129，然后笔记本端输入`ping 202.197.15.129`命令
-<img src=https://github.com/JunnanLi/iCore/blob/master/docs/img/ping.png width="700">
+<img src=https://github.com/JunnanLi/iCore/blob/master/docs/img/ping.png width="400">
 
 2) UDP测试
 我们将iCore的IP地址设置为202.197.15.129，并作为UDP客户端，然后笔记本作为UDP服务端，实现UDP交互
-<img src=https://github.com/JunnanLi/iCore/blob/master/docs/img/udp.png width="700">
+<img src=https://github.com/JunnanLi/iCore/blob/master/docs/img/udp.png width="400">
 
 3) TCP测试
 我们将iCore的IP地址设置为202.197.15.129，并作为TCP客户端，然后笔记本作为TCP服务端，实现TCP交互
-<img src=https://github.com/JunnanLi/iCore/blob/master/docs/img/tcp.png width="700">
+<img src=https://github.com/JunnanLi/iCore/blob/master/docs/img/tcp.png width="400">
 
 
 
