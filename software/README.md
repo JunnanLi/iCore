@@ -5,4 +5,4 @@
 |-------------|----------------------|
 | firmware    | 负责编译C代码生成二进制文件firmware.hex|
 | controller  | 负责将二进制文件写入CPU的存储器中，同时实现打印CPU运行过称中的打印信息 |
-| FreeRTOS_on_Tuman32  | 是另一个功能的firmware,负责实现FreeRTOS的功能 |
+| FreeRTOS_on_Tuman32  | 与firmware功能类似,负责生成hex二进制文件,该文件实现了[FreeRTOS](https://www.freertos.org/)的移植 |
