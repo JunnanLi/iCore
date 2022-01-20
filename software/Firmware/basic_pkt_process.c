@@ -323,7 +323,8 @@ int recv_packet(uint16_t *srcMAC, uint16_t *srcIP, uint16_t *dstMAC,
 }
 
 //***********************************************************************
-//*	function	| switch packet without any modification;
+//*	function	| discard packet;
+//*	parameter	| addr is the location of metadata[31:0];
 void discard_packet(uint32_t *addr){
 	if(*((volatile uint32_t*)addr) == 1){
 #ifdef PRINT_TEST
@@ -346,7 +347,7 @@ void discard_packet(uint32_t *addr){
 }
 
 //***********************************************************************
-//*	function	| discard packet
+//*	function	| switch packet without any modification;
 //*	parameter	| addr is the location of metadata[31:0];
 void switch_packet(void){
 	uint32_t *a;
